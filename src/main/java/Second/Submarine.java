@@ -4,6 +4,7 @@ public class Submarine {
 
     private int position = 0;
     private int depth = 0;
+    private int aim = 0;
 
     public int getPosition() {
         return position;
@@ -15,14 +16,15 @@ public class Submarine {
 
     public void forward(int x) {
         position += x;
+        depth += aim * x;
     }
 
     public void up(int x) {
-        depth -= x;
+        aim -= x;
     }
 
     public void down(int x) {
-        depth += x;
+        aim += x;
     }
 
 }
