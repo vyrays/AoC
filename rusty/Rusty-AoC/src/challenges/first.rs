@@ -1,13 +1,13 @@
-use std::{fs, error::Error, env::current_dir};
+use std::{fs, error::Error};
 
-pub fn start_first() {
+pub fn start() {
+    println!("First ------------------------------");
     let input_values = fetch_input().expect("Something is wrong with the input values...");
     part_one(&input_values);
     part_two(&input_values);
 }
 
 fn fetch_input() -> Result<Vec<i32>, Box<dyn Error>> {
-    println!("{}", current_dir()?.to_str().unwrap());
     let file_input: Vec<u8> = fs::read("files\\aoc_1.txt")?;
     let mut buffer: Vec<u8> = Vec::new();
     let mut input_values: Vec<i32> = Vec::new();

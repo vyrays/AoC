@@ -1,5 +1,7 @@
-mod first;
+mod challenges;
 
 fn main() {
-    first::first::start_first();
+    challenges::first::start();
+    // challenges::second::start();
+    challenges::third::start();
 }
