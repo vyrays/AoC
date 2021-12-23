@@ -1,5 +1,5 @@
-use std::{fs::File, io};
 use std::io::{BufRead, BufReader};
+use std::{fs::File, io};
 
 const BOARD_ROWS: u32 = 5;
 const BOARD_COLUMNS: u32 = 5;
@@ -29,10 +29,8 @@ pub fn start() {
     let mut boards: Vec<Board> = vec![];
     let random_numbers = match process_input(&mut boards) {
         Ok(random_numbers) => random_numbers,
-        Err(e) => panic!("Unable to read from local input file: {}", e)
+        Err(e) => panic!("Unable to read from local input file: {}", e),
     };
-
-
 }
 
 fn process_input(boards: &mut Vec<Board>) -> Result<Vec<u32>, io::Error> {
@@ -44,13 +42,19 @@ fn process_input(boards: &mut Vec<Board>) -> Result<Vec<u32>, io::Error> {
         match line {
             Ok(line) => {
                 if line_index == 0 {
-                    random_numbers = line.split(',').map(|number| number.to_owned().parse::<u32>().unwrap()).collect::<Vec<u32>>();
+                    random_numbers = line
+                        .split(',')
+                        .map(|number| number.to_owned().parse::<u32>().unwrap())
+                        .collect::<Vec<u32>>();
                 } else {
                     if line == "" {
                         continue;
                     }
 
-                    let board_numbers = line.split(' ').map(|number| number.to_owned().parse::<u32>().unwrap()).collect::<Vec<u32>>();
+                    let board_numbers = line
+                        .split(' ')
+                        .map(|number| number.to_owned().parse::<u32>().unwrap())
+                        .collect::<Vec<u32>>();
                     recycle_board.numbers.push(board_numbers);
 
                     if recycle_board.numbers.len() == 5 {
@@ -60,8 +64,8 @@ fn process_input(boards: &mut Vec<Board>) -> Result<Vec<u32>, io::Error> {
                         continue;
                     }
                 }
-            },
-            Err(e) => return Err(e)
+            }
+            Err(e) => return Err(e),
         }
     }
 

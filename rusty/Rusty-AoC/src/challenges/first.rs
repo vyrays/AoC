@@ -1,4 +1,4 @@
-use std::{fs, error::Error};
+use std::{error::Error, fs};
 
 pub fn start() {
     println!("First ------------------------------");
@@ -27,8 +27,14 @@ fn fetch_input() -> Result<Vec<i32>, Box<dyn Error>> {
 }
 
 fn part_one(input_values: &Vec<i32>) {
-    let amount = input_values.windows(2).filter(|val| val[0] < val[1]).count();
-    println!("The amount of increasing items of part one is: {:?}", amount)
+    let amount = input_values
+        .windows(2)
+        .filter(|val| val[0] < val[1])
+        .count();
+    println!(
+        "The amount of increasing items of part one is: {:?}",
+        amount
+    )
 }
 
 fn part_two(input_values: &Vec<i32>) {
@@ -37,5 +43,11 @@ fn part_two(input_values: &Vec<i32>) {
         window_sum_values.push(x[0] + x[1] + x[2])
     }
 
-    println!("The amount of increasing items of part two is: {:?}", window_sum_values.windows(2).filter(|sums| sums[0] < sums[1]).count());
+    println!(
+        "The amount of increasing items of part two is: {:?}",
+        window_sum_values
+            .windows(2)
+            .filter(|sums| sums[0] < sums[1])
+            .count()
+    );
 }
