@@ -105,7 +105,7 @@ fn reduce_ratings(mut rating: Vec<Vec<u32>>, bit_type: String) -> Vec<u32> {
             }
         };
 
-        let mut rating_length = rating.len();
+        let rating_length = rating.len();
         rating.retain(|vec| {
             if rating_length == 1 || vec.get(i).unwrap() == &rating_bit {
                 return true;
