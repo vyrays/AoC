@@ -1,8 +1,7 @@
 use std::io::{BufRead, BufReader};
-use std::{fs::File, io};
 use std::slice::Iter;
+use std::{fs::File, io};
 
-const BOARD_ROWS: i32 = 5;
 const BOARD_COLUMNS: i32 = 5;
 
 #[derive(Debug, Copy, Clone)]
@@ -15,11 +14,16 @@ struct Number {
 struct Board {
     numbers: Vec<Vec<Number>>,
     consecutive: i32,
+    won: bool,
 }
 
 impl Board {
     fn new() -> Self {
-        Board { numbers: vec![], consecutive: 0 }
+        Board {
+            numbers: vec![],
+            consecutive: 0,
+            won: false,
+        }
     }
 
     fn highlight(&mut self, number: &i32) {
@@ -32,7 +36,7 @@ impl Board {
         }
     }
 
-    fn check_rows(&mut self, last_number: &i32) -> Option<i32> {
+    fn check_rows(&mut self, last_number: i32) -> Option<i32> {
         for row_vecs in &self.numbers {
             'inner: for row in row_vecs {
                 if row.highlighted == true {
@@ -51,13 +55,11 @@ impl Board {
         None
     }
 
-    fn check_columns(&mut self, last_number: &i32) -> Option<i32> {
+    fn check_columns(&mut self, last_number: i32) -> Option<i32> {
         let numbers: &Vec<Vec<Number>> = &self.numbers.to_owned();
         let mut iters: Vec<Iter<Number>> = numbers.iter().map(|vec| vec.iter()).collect();
         for _ in 0..BOARD_COLUMNS {
-            let columns: Vec<&Number> = iters.iter_mut().map(|iter| {
-                iter.next().unwrap()
-            }).collect();
+            let columns: Vec<&Number> = iters.iter_mut().map(|iter| iter.next().unwrap()).collect();
             'inner: for column in columns {
                 if column.highlighted == true {
                     self.consecutive = self.consecutive + 1;
@@ -76,13 +78,15 @@ impl Board {
     }
 
     fn count_not_highlighted(&self) -> i32 {
-        self.numbers.iter().fold(0, |acc, vec| vec.iter().fold(acc, |mut i_acc, &number| {
-            if &number.highlighted == &false {
-                i_acc = i_acc + number.value;
-            }
+        self.numbers.iter().fold(0, |acc, vec| {
+            vec.iter().fold(acc, |mut i_acc, &number| {
+                if &number.highlighted == &false {
+                    i_acc = i_acc + number.value;
+                }
 
-            i_acc
-        }))
+                i_acc
+            })
+        })
     }
 }
 
@@ -103,7 +107,8 @@ pub fn start() {
         Err(e) => panic!("Unable to read from local input file: {}", e),
     };
 
-    part_one(random_numbers, boards);
+    part_one(random_numbers.clone(), boards.clone());
+    part_two(random_numbers, boards);
 }
 
 fn process_input(boards: &mut Vec<Board>) -> Result<Vec<i32>, io::Error> {
@@ -131,9 +136,12 @@ fn process_input(boards: &mut Vec<Board>) -> Result<Vec<i32>, io::Error> {
                         .map(|number| {
                             let value = match number.to_owned().parse::<i32>() {
                                 Ok(value) => value,
-                                Err(e) => -1,
+                                Err(_e) => -1,
                             };
-                            Number { value, highlighted: false }
+                            Number {
+                                value,
+                                highlighted: false,
+                            }
                         })
                         .filter(|number| number.value >= 0)
                         .collect::<Vec<Number>>();
@@ -158,13 +166,39 @@ fn part_one(random_numbers: Vec<i32>, mut boards: Vec<Board>) {
     'outer: for number in random_numbers.iter() {
         for board in boards.iter_mut() {
             board.highlight(number);
-            if let Some(rows_result) = board.check_rows(&number) {
-                println!("The result of day 3 part one is: {}", rows_result);
+            if let Some(rows_result) = board.check_rows(*number) {
+                println!("The result of day 4 part one is: {}", rows_result);
                 break 'outer;
-            } else if let Some(columns_result) = board.check_columns(&number) {
-                println!("The result of day 3 part one is: {}", columns_result);
+            } else if let Some(columns_result) = board.check_columns(*number) {
+                println!("The result of day 4 part one is: {}", columns_result);
                 break 'outer;
             }
         }
     }
+}
+
+fn part_two(random_numbers: Vec<i32>, mut boards: Vec<Board>) {
+    let mut last_won_result: Option<i32> = None;
+    for number in random_numbers.iter() {
+        boards.retain(|board| !board.won);
+        if boards.len() == 0 {
+            break;
+        }
+
+        for board in boards.iter_mut() {
+            board.highlight(number);
+            if let Some(rows_result) = board.check_rows(*number) {
+                board.won = true;
+                last_won_result = Some(rows_result);
+            } else if let Some(columns_result) = board.check_columns(*number) {
+                board.won = true;
+                last_won_result = Some(columns_result);
+            }
+        }
+    }
+
+    println!(
+        "The result of day 4 part two is: {}",
+        last_won_result.unwrap_or(-1)
+    );
 }
